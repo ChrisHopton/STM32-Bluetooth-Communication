@@ -235,42 +235,39 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-  if(huart->Instance==UART7)
+  if(huart->Instance==USART6)
   {
-  /* USER CODE BEGIN UART7_MspInit 0 */
+  /* USER CODE BEGIN USART6_MspInit 0 */
 
-  /* USER CODE END UART7_MspInit 0 */
+  /* USER CODE END USART6_MspInit 0 */
 
   /** Initializes the peripherals clock
   */
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_UART7;
-    PeriphClkInitStruct.Uart7ClockSelection = RCC_UART7CLKSOURCE_PCLK1;
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART6;
+    PeriphClkInitStruct.Usart6ClockSelection = RCC_USART6CLKSOURCE_PCLK2;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
       Error_Handler();
     }
 
     /* Peripheral clock enable */
-    __HAL_RCC_UART7_CLK_ENABLE();
+    __HAL_RCC_USART6_CLK_ENABLE();
 
-    __HAL_RCC_GPIOF_CLK_ENABLE();
-    /**UART7 GPIO Configuration
-    PF6     ------> UART7_RX
-    PF7     ------> UART7_TX
+    __HAL_RCC_GPIOG_CLK_ENABLE();
+    /**USART6 GPIO Configuration
+    PG9     ------> USART6_RX
+    PG14     ------> USART6_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
+    GPIO_InitStruct.Pin = GPIO_PIN_9|GPIO_PIN_14;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF8_UART7;
-    HAL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+    GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
-    /* UART7 interrupt Init */
-    HAL_NVIC_SetPriority(UART7_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(UART7_IRQn);
-  /* USER CODE BEGIN UART7_MspInit 1 */
+  /* USER CODE BEGIN USART6_MspInit 1 */
 
-  /* USER CODE END UART7_MspInit 1 */
+  /* USER CODE END USART6_MspInit 1 */
   }
 
 }
@@ -283,25 +280,23 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
 */
 void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 {
-  if(huart->Instance==UART7)
+  if(huart->Instance==USART6)
   {
-  /* USER CODE BEGIN UART7_MspDeInit 0 */
+  /* USER CODE BEGIN USART6_MspDeInit 0 */
 
-  /* USER CODE END UART7_MspDeInit 0 */
+  /* USER CODE END USART6_MspDeInit 0 */
     /* Peripheral clock disable */
-    __HAL_RCC_UART7_CLK_DISABLE();
+    __HAL_RCC_USART6_CLK_DISABLE();
 
-    /**UART7 GPIO Configuration
-    PF6     ------> UART7_RX
-    PF7     ------> UART7_TX
+    /**USART6 GPIO Configuration
+    PG9     ------> USART6_RX
+    PG14     ------> USART6_TX
     */
-    HAL_GPIO_DeInit(GPIOF, GPIO_PIN_6|GPIO_PIN_7);
+    HAL_GPIO_DeInit(GPIOG, GPIO_PIN_9|GPIO_PIN_14);
 
-    /* UART7 interrupt DeInit */
-    HAL_NVIC_DisableIRQ(UART7_IRQn);
-  /* USER CODE BEGIN UART7_MspDeInit 1 */
+  /* USER CODE BEGIN USART6_MspDeInit 1 */
 
-  /* USER CODE END UART7_MspDeInit 1 */
+  /* USER CODE END USART6_MspDeInit 1 */
   }
 
 }

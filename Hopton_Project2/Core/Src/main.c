@@ -18,12 +18,14 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ili9163.h"
 #include "string.h"
 #include <stdint.h>
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +52,8 @@ DMA_HandleTypeDef hdma_spi1_tx;
 
 TIM_HandleTypeDef htim14;
 
+UART_HandleTypeDef huart6;
+
 /* USER CODE BEGIN PV */
 volatile uint32_t MSec = 0;
 
@@ -70,13 +74,14 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_TIM14_Init(void);
+static void MX_USART6_UART_Init(void);
 /* USER CODE BEGIN PFP */
 uint16_t keyPadScan(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+GPIO_PinState statePinStatus;
 /* USER CODE END 0 */
 
 /**
@@ -110,6 +115,8 @@ int main(void)
   MX_DMA_Init();
   MX_SPI1_Init();
   MX_TIM14_Init();
+  MX_USART6_UART_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   ILI9163_init(0);
 
@@ -117,6 +124,11 @@ int main(void)
 //	  uint32_t num = 0;
 //	Write_Flash(((uint32_t *) num));
 	uint32_t pinInt = 0;
+	 uint8_t buffer[1024];
+	    uint32_t count = 0;
+	    extern USBD_HandleTypeDef hUsbDeviceFS;
+
+	   // extern USBD_HandleTypeDef GetRxBuffer;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -127,140 +139,24 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  char readData = (char) readFlash1();
 
-	  // ... (other code)
+	  statePinStatus = HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_0); // Replace GPIOx with the actual GPIO port and STATE_PIN with the actual pin number
 
-	  if(readData == (char)0){
+	  	  if(statePinStatus == GPIO_PIN_SET) {
+	  	      // The module is connected to another Bluetooth device
+	  		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
+//	  		char *msg = "Hello BLE Module!";
+//	  		 HAL_UART_Transmit(&huart6, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
 
-	      char strrr[100];
-	      char pin[5] = {0}; // Initialize to empty string, 5 to include null terminator
-
-	      ILI9163_newFrame();
-	      //DisplayLoadingAnimation(70,60,10,2000);
-	      sprintf(strrr, "No pin set");
-	      ILI9163_drawStringF(15, 5, Font_11x18, BLUE, strrr);
-	      sprintf(strrr, "Click A to set one.");
-	      ILI9163_drawStringF(5, 30, Font_7x10, BLUE, strrr);
-	      ILI9163_render();
-
-	      if(keyChar == 'A'){
-	          ILI9163_newFrame();
-	          sprintf(strrr, "Click A to set one.");
-	          ILI9163_drawStringF(5, 30, Font_7x10, BLUE, strrr);
-	          ILI9163_render();
-	          HAL_Delay(100);
-	          keyChar = 0;
-
-	          while(strlen(pin) < 4){
-	              // Read keyChar here, possibly from a function or input device
-
-	              if(keyChar != 0){ // Check if keyChar is a digit
-	                  size_t len = strlen(pin);
-	                  pin[len] = keyChar;
-	                  pin[len + 1] = '\0'; // Null terminate the string
-	              }
-	              keyChar = 0;
-	              ILI9163_newFrame();
-	              //DisplayLoadingAnimation(70,60,10,2000);
-	              sprintf(strrr, "Enter 4 digit pin: %s", pin);
-	              ILI9163_drawStringF(15, 5, Font_11x18, BLUE, strrr);
-	              ILI9163_render();
-	          }
-	          HAL_Delay(150);
-	         //DisplayLoadingAnimation(70,60,10,2000);
-	           pinInt = strtoul(pin, NULL, 10); // Convert string to unsigned long (32-bit)
-	                      Write_Flash( pinInt); // Write the integer to flash
-
-	      }
-	      counter = 1;
-	  }
-
-	  else if(counter == 3){
-	  		  char strrr[100];
-	  		  	      char pin[5] = {0}; // Initialize to empty string, 5 to include null terminator
-
-	  		  	      ILI9163_newFrame();
-	  		  	      //DisplayLoadingAnimation(70,60,10,2000);
-	  		  	      sprintf(strrr, "Change pin?");
-	  		  	      ILI9163_drawStringF(15, 5, Font_11x18, BLUE, strrr);
-	  		  	      sprintf(strrr, "Click A to set one.");
-	  		  	      ILI9163_drawStringF(5, 30, Font_7x10, BLUE, strrr);
-	  		  	      ILI9163_render();
-	  		  	      if(keyChar == 'A'){
-	  		  	    	uint32_t num = 0;
-	  		  	    	Write_Flash(((uint32_t *) num));
-	  		  	    	counter = 0;
-	  		  	      }
-
+	  	  } else {
+	  	      // The module is not connected
+	  		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET); // Turn on LED
 	  	  }
-	  readData = (char) readFlash1();
-	  if(counter == 2 || readData != (char)0 && counter != 3){
-	      char strrr[100];
-	      char pin[5] = {0};
-
-	      while(strlen(pin) < 4){
-	          // Read keyChar here, possibly from a function or input device
-	          if(keyChar != 0){ // Check if keyChar is a digit
-	              size_t len = strlen(pin);
-	              pin[len] = keyChar;
-	              pin[len + 1] = '\0'; // Null terminate the string
-	          }
-	          keyChar = 0;
-	          ILI9163_newFrame();
-	          //DisplayLoadingAnimation(70,60,10,2000);
-	          sprintf(strrr, "Locked-Enter Pin: %s", pin);
-	          ILI9163_drawStringF(15, 5, Font_11x18, BLUE, strrr);
-	          ILI9163_render();
-	      }
-
-	      // Assuming readFlash1() returns the stored PIN as a string
-
-	      int temp = readFlash1();
-	      uint32_t enteredPin = strtoul(pin, NULL, 10);
-
-	      if(enteredPin == temp){
-	          // PIN is correct
-	          ILI9163_newFrame();
-	          //DisplayLoadingAnimation(70,60,10,2000);
-	          sprintf(strrr, "Unlocked!", pin);
-	          ILI9163_fillDisplay(GREEN);
-	          ILI9163_drawStringF(15, 5, Font_11x18, BLUE, strrr);
-	          ILI9163_render();
-	          HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
-
-	          HAL_Delay(3000);
-	          HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET); // Turn on LED
-	          counter = 3;
-	      } else {
-	          // PIN is incorrect
-	          // Handle incorrect PIN case
-	    	  ILI9163_newFrame();
-	    	  	          //DisplayLoadingAnimation(70,60,10,2000);
-	    	  	          sprintf(strrr, "Wrong Pin.", pin);
-	    	  	          ILI9163_fillDisplay(RED);
-	    	  	          ILI9163_drawStringF(15, 5, Font_11x18, BLUE, strrr);
-	    	  	          ILI9163_render();
-	    	  	        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET); // Turn on LED
-	    	  	        	          HAL_Delay(3000);
-	    	  	        	        HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET); // Turn on LED
-	      }
-	  }
-
-
-
-
-	  // ... (rest of the code)
-
-
-
-
 
 
   /* USER CODE END 3 */
 }
 }
-
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -382,6 +278,41 @@ static void MX_TIM14_Init(void)
 }
 
 /**
+  * @brief USART6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART6_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART6_Init 0 */
+
+  /* USER CODE END USART6_Init 0 */
+
+  /* USER CODE BEGIN USART6_Init 1 */
+
+  /* USER CODE END USART6_Init 1 */
+  huart6.Instance = USART6;
+  huart6.Init.BaudRate = 115200;
+  huart6.Init.WordLength = UART_WORDLENGTH_8B;
+  huart6.Init.StopBits = UART_STOPBITS_1;
+  huart6.Init.Parity = UART_PARITY_NONE;
+  huart6.Init.Mode = UART_MODE_TX_RX;
+  huart6.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart6.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart6.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart6.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART6_Init 2 */
+
+  /* USER CODE END USART6_Init 2 */
+
+}
+
+/**
   * Enable DMA controller clock
   */
 static void MX_DMA_Init(void)
@@ -414,10 +345,11 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_11|GPIO_PIN_13
-                          |GPIO_PIN_14|GPIO_PIN_15|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
+                          |GPIO_PIN_15|GPIO_PIN_8|GPIO_PIN_9, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PE5 */
   GPIO_InitStruct.Pin = GPIO_PIN_5;
@@ -425,8 +357,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PB0 PB14 PB8 PB9 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_14|GPIO_PIN_8|GPIO_PIN_9;
+  /*Configure GPIO pins : PB0 PB8 PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_8|GPIO_PIN_9;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -439,25 +371,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  /*Configure GPIO pin : ble_state_Pin */
+  GPIO_InitStruct.Pin = ble_state_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(ble_state_GPIO_Port, &GPIO_InitStruct);
+
   /*Configure GPIO pins : PC6 PC7 PC8 */
   GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : USB_SOF_Pin USB_ID_Pin USB_DM_Pin USB_DP_Pin */
-  GPIO_InitStruct.Pin = USB_SOF_Pin|USB_ID_Pin|USB_DM_Pin|USB_DP_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : USB_VBUS_Pin */
-  GPIO_InitStruct.Pin = USB_VBUS_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(USB_VBUS_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
@@ -487,7 +411,6 @@ void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) // Your TxCpltCallback
 		SPI_DMA_FL=1;
 	}
 }
-
 
 
 /* USER CODE END 4 */
