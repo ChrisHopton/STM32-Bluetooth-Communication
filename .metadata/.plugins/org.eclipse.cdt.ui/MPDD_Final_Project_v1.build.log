@@ -1,0 +1,10 @@
+23:15:50 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j12 all 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+   text	   data	    bss	    dec	    hex	filename
+  27132	    152	  43168	  70452	  11334	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+
+23:15:50 Build Finished. 0 errors, 0 warnings. (took 314ms)
+
