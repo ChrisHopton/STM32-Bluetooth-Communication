@@ -22,7 +22,8 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+extern uint8_t CDC_Buffer[64];
+extern uint32_t CDC_Len;
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/

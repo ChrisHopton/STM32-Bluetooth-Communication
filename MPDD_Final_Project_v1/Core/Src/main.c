@@ -35,8 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define FlashAddress 0x08008000
-#define PIN_LENGTH 4
+
 
 /* USER CODE END PD */
 
@@ -59,12 +58,15 @@ volatile uint32_t MSec = 0;
 
 uint8_t SPI_DMA_FL = 0;
 uint32_t SPI_DMA_CNT=1;
-
-
+char rxIn[100];
+uint8_t Rx_data[10]; // Buffer to store received data
 
 char keyChar = 0;
 uint16_t key = 0;
-uint8_t counter = 0;
+
+char receiveBuffer[1]; // Global buffer for one byte of data
+char receivedData[1000]; // Global buffer for storing received messages
+uint8_t receivedDataIndex = 0; // Index for storing data in receivedData
 
 /* USER CODE END PV */
 
@@ -121,42 +123,79 @@ int main(void)
   ILI9163_init(0);
 
 
-//	  uint32_t num = 0;
-//	Write_Flash(((uint32_t *) num));
-	uint32_t pinInt = 0;
-	 uint8_t buffer[1024];
-	    uint32_t count = 0;
-	    extern USBD_HandleTypeDef hUsbDeviceFS;
+//  char *message = "STM32 is ready\r\n";
+//   HAL_UART_Transmit(&huart6, (uint8_t *)message, strlen(message), HAL_MAX_DELAY); // Send message over USART6
 
-	   // extern USBD_HandleTypeDef GetRxBuffer;
+   // Start receiving data in interrupt mode
+
+   HAL_UART_Receive_IT(&huart6, (uint8_t *)receiveBuffer, sizeof(receiveBuffer));
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+//	  if(HAL_UART_Receive(&huart6, Rx_data, sizeof(Rx_data), 1000) == HAL_OK) {
+//	          // Process received data stored in Rx_data
+//		  uint8_t data[100]; //
+//		  // Assuming Rx_data is the buffer used in HAL_UART_Receive_IT
+//		          memcpy(data, Rx_data, sizeof(Rx_data)); // Copy received data to 'data' buffer
+//
+//	      }
 	 // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  //char *dataToSend = "Hello Bluetooth!";
+
+	  // Check if data is received from USB CDC
+	  // Check if data is received from USB CDC
 
 	  statePinStatus = HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_0); // Replace GPIOx with the actual GPIO port and STATE_PIN with the actual pin number
 
-	  	  if(statePinStatus == GPIO_PIN_SET) {
-	  	      // The module is connected to another Bluetooth device
-	  		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
-//	  		char *msg = "Hello BLE Module!";
-//	  		 HAL_UART_Transmit(&huart6, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+	  if(statePinStatus == GPIO_PIN_SET) {
+	          // The module is connected to another Bluetooth device
+	          HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
+//
+//	          char receivedData[100]; // Buffer for received data
+//	          memset(receivedData, 0, sizeof(receivedData)); // Clear the buffer
+//
+//	        	   HAL_UART_Transmit(&huart6, (uint8_t *)"Hello", strlen("Hello"), 1000);
 
-	  	  } else {
-	  	      // The module is not connected
-	  		  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET); // Turn on LED
-	  	  }
+
+
+	          // Listen for incoming data (AT commands) from LightBlue app
+	        	         //char receivedData[100]; // Buffer for received data
+//	        	         HAL_UART_Receive(&huart6, (uint8_t *)receivedData, sizeof(receivedData),2000); // Non-blocking receive
+//
+//	        	         // Process received data and send AT command
+//	        	         if (strcmp(receivedData, "AT") == 0) {
+//	                  // Here, add code to get the PIN from the BLE module
+//	                  // For example, you might need to send an AT command to the module and read its response
+//	            	  char moduleResponse[100];
+//	            	  HAL_UART_Transmit(&huart6, (uint8_t *)"AT\r\n", strlen("AT\r\n"), 1000);
+//	            	  HAL_UART_Receive(&huart6, (uint8_t *)moduleResponse, sizeof(moduleResponse), 10000);
+//	                   // Buffer for module's response
+//	                  // Example: HAL_UART_Transmit(&huart6, (uint8_t *)"AT+PIN?", strlen("AT+PIN?"), 1000);
+//	                  // Example: HAL_UART_Receive(&huart6, (uint8_t *)moduleResponse, sizeof(moduleResponse), 2000);
+//
+//	                  // Transmit the response back to LightBlue app
+//	                  HAL_UART_Transmit(&huart6, (uint8_t *)moduleResponse, strlen(moduleResponse), 1000);
+//	              }
+	          }
+
+	      else {
+	         // The module is not connected
+	         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET); // Turn off LED
+	     }
+
+
 
 
   /* USER CODE END 3 */
-}
-}
+}}
+
 /**
   * @brief System Clock Configuration
   * @retval None
@@ -293,7 +332,7 @@ static void MX_USART6_UART_Init(void)
 
   /* USER CODE END USART6_Init 1 */
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 115200;
+  huart6.Init.BaudRate = 9600;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;
@@ -392,25 +431,53 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if(GPIO_Pin == GPIO_PIN_13){
-	  HAL_TIM_Base_Start_IT(&htim14);
+void sendCommand(const char *command) {
+    // Send command to BLE module
+    HAL_UART_Transmit(&huart6, (uint8_t*)command, strlen(command), 1000);
+    HAL_UART_Transmit(&huart6, (uint8_t*)"\r\n", 2, 1000); // Send CR and NL
+
+    // Receive response from BLE module
+    int i = 0;
+    while (1) {
+        uint8_t data;
+        HAL_StatusTypeDef status = HAL_UART_Receive(&huart6, &data, 1, 5000);
+        if (status == HAL_OK) {
+            if (i < 99) {
+                rxIn[i++] = data;
+            }
+        } else {
+            break; // Exit loop if no data is received
+        }
+    }
+    rxIn[i] = '\0'; // Null-terminate the string
+    // Print the response (implement this according to your needs)
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+  if (huart->Instance == USART6) {
+    // Print the received byte for debugging
+   // HAL_UART_Transmit(&huart6, (uint8_t *)receiveBuffer, 1, HAL_MAX_DELAY); // Echo the byte
+
+    // Append received byte to receivedData buffer
+    receivedData[receivedDataIndex++] = receiveBuffer[0];
+
+    // Check for end of message or buffer overflow
+    if (receiveBuffer[0] == '\n' || receivedDataIndex >= sizeof(receivedData) - 1) {
+      // Null-terminate the string and reset index
+      receivedData[receivedDataIndex] = '\0';
+      receivedDataIndex = 0;
+
+      // Echo received data back to the sender for confirmation
+      HAL_UART_Transmit(&huart6, (uint8_t *)receivedData, strlen(receivedData), HAL_MAX_DELAY);
+    }
+
+    // Re-enable UART receive interrupt for the next byte
+    HAL_UART_Receive_IT(&huart6, (uint8_t *)receiveBuffer, sizeof(receiveBuffer));
   }
 }
 
 
 
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) // Your TxCpltCallback
-{
-	SPI_DMA_CNT--;
-	if(SPI_DMA_CNT==0)
-	{
-		HAL_SPI_DMAStop(&hspi1);
-		SPI_DMA_CNT=1;
-		SPI_DMA_FL=1;
-	}
-}
 
 
 /* USER CODE END 4 */

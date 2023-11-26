@@ -1,3 +1,4 @@
+"./Core/Src/ble_module.o"
 "./Core/Src/fonts.o"
 "./Core/Src/ili9163.o"
 "./Core/Src/main.o"
