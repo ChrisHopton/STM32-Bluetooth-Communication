@@ -10,7 +10,9 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+    <div className='bg-gray-500'>
     <BluetoothComponent />
+    </div>
   </React.StrictMode>
 );
 

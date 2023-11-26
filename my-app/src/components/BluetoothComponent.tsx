@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 const BluetoothComponent = () => {
   const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | null>(null);
   const [dataCharacteristic, setDataCharacteristic] = useState<BluetoothRemoteGATTCharacteristic | null>(null);
+  const [inputData, setInputData] = useState('');
+
 
   useEffect(() => {
     // Any additional setup can go here
@@ -35,22 +37,58 @@ const BluetoothComponent = () => {
   };
 
   const handleCharacteristicValueChanged = (event: Event) => {
-    // Implementation similar to your original JavaScript code
+    const target = event.target as BluetoothRemoteGATTCharacteristic;
+    const value = target.value;
+    let decoder = new TextDecoder('utf-8');
+    let message = '';
+  
+    // Read bytes one by one and decode accordingly
+    for (let i = 0; i < value.byteLength; i++) {
+      message += String.fromCharCode(value.getUint8(i));
+    }
+  
+    log('Received: ' + message);
   };
+  
 
   const handleSendClick = () => {
-    // Implementation similar to your original JavaScript code
+    let dataToSend = inputData; // Assuming inputData is a state variable holding input data
+    dataToSend += '\r\n'; // Append \r for CR and \n for NL
+    const data = new TextEncoder().encode(dataToSend);
+  
+    if (dataCharacteristic) {
+      const method = dataCharacteristic.properties.writeWithoutResponse ? 'writeValueWithoutResponse' : 'writeValue';
+  
+      // Use setTimeout to delay the sending of data
+      setTimeout(() => {
+        dataCharacteristic[method](data)
+        .then(() => {
+          log('Data sent: ' + dataToSend);
+        })
+        .catch(error => {
+          log('Send Error: ' + error);
+        });
+      }, 100); // 100 ms delay
+    } else {
+      log('Characteristic not found.');
+    }
   };
+  
 
   const log = (text: string) => {
     // Implement a logging mechanism, possibly updating state to render logs
   };
 
-  return (
+return (
     <div>
       <button onClick={handleConnectClick}>Connect</button>
+      <input
+        type="text"
+        value={inputData}
+        onChange={(e) => setInputData(e.target.value)}
+      />
       <button onClick={handleSendClick}>Send Data</button>
-      {/* Additional UI elements */}
+      {/* ... other components */}
     </div>
   );
 };
