@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import BluetoothComponent from './components/BluetoothComponent';
+import AI from './components/OpenAIAPI';
 
 
 const root = ReactDOM.createRoot(
@@ -11,7 +12,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <div className='bg-gray-500'>
-    <BluetoothComponent />
+    <App />
     </div>
   </React.StrictMode>
 );

@@ -1,17 +1,10 @@
-17:54:11 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+17:38:27 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
 make -j20 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: MPDD_Final_Project_v1.elf
- 
 arm-none-eabi-size   MPDD_Final_Project_v1.elf 
-arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
    text	   data	    bss	    dec	    hex	filename
-  45644	    388	   9956	  55988	   dab4	MPDD_Final_Project_v1.elf
+  45632	    388	   9956	  55976	   daa8	MPDD_Final_Project_v1.elf
 Finished building: default.size.stdout
  
-Finished building: MPDD_Final_Project_v1.list
- 
 
-17:54:13 Build Finished. 0 errors, 0 warnings. (took 1s.603ms)
+17:38:27 Build Finished. 0 errors, 0 warnings. (took 553ms)
 

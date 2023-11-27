@@ -5117,3 +5117,18 @@ Command-line arguments:  -os win32 -ws win32 -arch x86_64
 
 !ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2023-11-20 14:58:35.492
 !MESSAGE Started RMI Server, listening on port 41337
+!SESSION 2023-11-26 17:00:18.729 -----------------------------------------------
+eclipse.buildId=Version 1.13.2
+java.version=17.0.6
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_US
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2023-11-26 17:01:14.627
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2023-11-26 17:01:14.634
+!MESSAGE Log4j2 initialized with config file C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2023-11-26 17:01:22.503
+!MESSAGE Started RMI Server, listening on port 41337
