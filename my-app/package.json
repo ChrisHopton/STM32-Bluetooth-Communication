@@ -1,0 +1,57 @@
+{
+  "devDependencies": {
+    "@types/react": "^18.2.38",
+    "@types/react-dom": "^18.2.17",
+    "@types/web-bluetooth": "^0.0.20"
+  },
+  "dependencies": {
+    "@google-ai/generativelanguage": "^1.1.0",
+    "autoprefixer": "^10.4.16",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "dotenv": "^16.3.1",
+    "google-auth-library": "^9.2.0",
+    "https-browserify": "^1.0.0",
+    "openai": "^4.20.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "postcss": "^8.4.31",
+    "querystring-es3": "^0.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.1",
+    "react-scripts": "^5.0.1",
+    "react-syntax-highlighter": "^15.5.0",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^4.9.5",
+    "url": "^0.11.3",
+    "util": "^0.12.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "name": "my-app",
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "version": "1.0.0",
+  "main": "postcss.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
