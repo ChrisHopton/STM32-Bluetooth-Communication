@@ -1,14 +1,16 @@
 import React from 'react';
 import BluetoothComponent from './components/BluetoothComponent';
-import useOpenAI from './components/OpenAIAPI';
-import ChatInterface from './components/OpenAIAPI';
+import TextGenerator from './components/OpenAIAPI';
+import ChatComponent from './components/ChatRoom';
+
 
 const App: React.FC = () => {
 
   return (
     <div className='bg-gray-500'>
       <BluetoothComponent />
-      <ChatInterface/>
+
+      <ChatComponent />
     </div>
   );
 };

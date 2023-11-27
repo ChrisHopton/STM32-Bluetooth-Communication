@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import BluetoothComponent from './components/BluetoothComponent';
-import AI from './components/OpenAIAPI';
+
 
 
 const root = ReactDOM.createRoot(
