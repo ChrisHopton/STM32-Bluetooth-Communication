@@ -1,12 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus  } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
-const ChatComponent: React.FC = () => {
+interface ChatComponentProps {
+  bluetoothMessage: string;
+}
+
+const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage }) => {
   const [messages, setMessages] = useState<{ content: string, sender: 'user' | 'api' }[]>([]);
   const [inputText, setInputText] = useState('');
   const [useChatModel, setUseChatModel] = useState(true);
+
+  // Function to handle messages received from Bluetooth
+  const handleBluetoothMessage = (bluetoothMessage) => {
+    if (!bluetoothMessage.trim()) return;
+
+    setMessages(prevMessages => [...prevMessages, { content: bluetoothMessage, sender: 'user' }]);
+
+    const endpoint = useChatModel ? 'http://localhost:3001/chat-generate-message' : 'http://localhost:3001/data-generate-message';
+
+    fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prompt: bluetoothMessage }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      setMessages(prev => [...prev, { content: data.message || data.content, sender: 'api' }]);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  };
 
   const sendMessage = () => {
     if (!inputText.trim()) return;
@@ -48,7 +76,13 @@ const ChatComponent: React.FC = () => {
     },
   };
 
-
+  useEffect(() => {
+    console.log("ChatComponent received message: ", bluetoothMessage);
+    if (bluetoothMessage) {
+      handleBluetoothMessage(bluetoothMessage);
+    }
+  }, [bluetoothMessage]);
+  
 
   return (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-gray-100 text-gray-800 p-10">

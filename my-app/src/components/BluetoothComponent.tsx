@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const NavbarWithBluetooth: React.FC = () => {
+const BluetoothComponent = ({ onReceiveBluetoothMessage  }) => {
     // State and functions from BluetoothComponent
     const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | null>(null);
     const [dataCharacteristic, setDataCharacteristic] = useState<BluetoothRemoteGATTCharacteristic | null>(null);
@@ -42,13 +42,19 @@ const NavbarWithBluetooth: React.FC = () => {
         const value = target.value;
         let decoder = new TextDecoder('utf-8');
         let message = '';
-
+    
         for (let i = 0; i < value.byteLength; i++) {
             message += String.fromCharCode(value.getUint8(i));
         }
+    
+        message = message.trim(); // This will remove any whitespace or control characters from both ends
+        message = message.replace(/\x00/g, ''); // Replace with the actual character code
 
+    
         log('Received: ' + message);
+        onReceiveBluetoothMessage(message);
     };
+    
 
     const handleSendClick = () => {
         let dataToSend = inputData + '\r\n';
@@ -106,4 +112,4 @@ const NavbarWithBluetooth: React.FC = () => {
     );
 };
 
-export default NavbarWithBluetooth;
+export default BluetoothComponent;

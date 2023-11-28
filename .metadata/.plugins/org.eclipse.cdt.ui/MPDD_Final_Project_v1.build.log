@@ -1,10 +1,28 @@
-17:38:27 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+23:30:12 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
 make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:166:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  166 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:437:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  437 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:166:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  166 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
 arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
    text	   data	    bss	    dec	    hex	filename
-  45632	    388	   9956	  55976	   daa8	MPDD_Final_Project_v1.elf
+  45744	    388	   9956	  56088	   db18	MPDD_Final_Project_v1.elf
 Finished building: default.size.stdout
  
+Finished building: MPDD_Final_Project_v1.list
+ 
 
-17:38:27 Build Finished. 0 errors, 0 warnings. (took 553ms)
+23:30:14 Build Finished. 0 errors, 2 warnings. (took 1s.993ms)
 

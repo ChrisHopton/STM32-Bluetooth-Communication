@@ -1,18 +1,26 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import BluetoothComponent from './components/BluetoothComponent';
-import TextGenerator from './components/OpenAIAPI';
 import ChatComponent from './components/ChatRoom';
 
 
-const App: React.FC = () => {
+const ParentComponent = () => {
+  const [bluetoothMessage, setBluetoothMessage] = useState('');
 
+  const onReceiveBluetoothMessage = (message) => {
+    setBluetoothMessage(message);
+  };
+  console.log("Here is the message: " ,bluetoothMessage)
   return (
-    <div className='bg-gray-500'>
-      <BluetoothComponent />
-
-      <ChatComponent />
+    
+    <div>
+      <BluetoothComponent onReceiveBluetoothMessage={onReceiveBluetoothMessage} />
+      <ChatComponent bluetoothMessage={bluetoothMessage} />
     </div>
   );
 };
 
-export default App;
+export default ParentComponent;
+
+
+

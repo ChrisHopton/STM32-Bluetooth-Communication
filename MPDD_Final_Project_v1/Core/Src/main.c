@@ -158,10 +158,13 @@ int main(void)
 	          // The module is connected to another Bluetooth device
 	          HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
 //
-//	          char receivedData[100]; // Buffer for received data
-//	          memset(receivedData, 0, sizeof(receivedData)); // Clear the buffer
-//
-//	        	   HAL_UART_Transmit(&huart6, (uint8_t *)"Hello", strlen("Hello"), 1000);
+	       uint8_t dataToSend[] = "Say: Ghazal Is Halal "; // Data you want to send
+	       uint16_t dataSize = sizeof(dataToSend); // Calculate the size of the data
+
+
+	          // Call the function to transmit data
+	          transmitData(&huart6, dataToSend, dataSize);
+	          HAL_Delay(10000);
 
 
 
@@ -431,27 +434,10 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void sendCommand(const char *command) {
-    // Send command to BLE module
-    HAL_UART_Transmit(&huart6, (uint8_t*)command, strlen(command), 1000);
-    HAL_UART_Transmit(&huart6, (uint8_t*)"\r\n", 2, 1000); // Send CR and NL
-
-    // Receive response from BLE module
-    int i = 0;
-    while (1) {
-        uint8_t data;
-        HAL_StatusTypeDef status = HAL_UART_Receive(&huart6, &data, 1, 5000);
-        if (status == HAL_OK) {
-            if (i < 99) {
-                rxIn[i++] = data;
-            }
-        } else {
-            break; // Exit loop if no data is received
-        }
-    }
-    rxIn[i] = '\0'; // Null-terminate the string
-    // Print the response (implement this according to your needs)
+void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+    HAL_UART_Transmit(huart, data, size, 1000); // 1000 is timeout duration
 }
+
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   if (huart->Instance == USART6) {
