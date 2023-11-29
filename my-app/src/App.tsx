@@ -6,19 +6,30 @@ import ChatComponent from './components/ChatRoom';
 
 const ParentComponent = () => {
   const [bluetoothMessage, setBluetoothMessage] = useState('');
+  const [responseMessage, setResponseMessage] = useState('');
 
   const onReceiveBluetoothMessage = (message) => {
     setBluetoothMessage(message);
   };
-  console.log("Here is the message: " ,bluetoothMessage)
+
+  const onSendResponseMessage = (message) => {
+    setResponseMessage(message);
+  };
+
   return (
-    
     <div>
-      <BluetoothComponent onReceiveBluetoothMessage={onReceiveBluetoothMessage} />
-      <ChatComponent bluetoothMessage={bluetoothMessage} />
+      <BluetoothComponent 
+        onReceiveBluetoothMessage={onReceiveBluetoothMessage}
+        onResponseMessage={responseMessage}
+      />
+      <ChatComponent 
+        bluetoothMessage={bluetoothMessage} 
+        onSendResponseMessage={onSendResponseMessage}
+      />
     </div>
   );
-};
+}
+
 
 export default ParentComponent;
 

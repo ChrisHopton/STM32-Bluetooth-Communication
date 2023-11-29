@@ -5,9 +5,10 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface ChatComponentProps {
   bluetoothMessage: string;
+  onSendResponseMessage: (message: string) => void;
 }
 
-const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage }) => {
+const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage, onSendResponseMessage }) => {
   const [messages, setMessages] = useState<{ content: string, sender: 'user' | 'api' }[]>([]);
   const [inputText, setInputText] = useState('');
   const [useChatModel, setUseChatModel] = useState(true);
@@ -22,7 +23,9 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage }) => {
     if (!bluetoothMessage.trim()) return;
 
     const newMessage = { content: bluetoothMessage, sender: 'user' };
+    //console.log(newMessage)
     const updatedMessages = [...messages, newMessage];
+    //console.log(updatedMessages)
     setMessages(prevMessages => [...prevMessages, newMessage]);
 
     const endpoint = useChatModel ? 'http://localhost:3001/chat-generate-message' : 'http://localhost:3001/data-generate-message';
@@ -36,7 +39,11 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage }) => {
     })
       .then(response => response.json())
       .then(data => {
+        const apiResponse = data.message || data.content;
         setMessages(prev => [...prev, { content: data.message || data.content, sender: 'api' }]);
+      
+        // Send the API response back to BluetoothComponent
+        onSendResponseMessage(apiResponse);
       })
       .catch(error => {
         console.error('Error:', error);
@@ -63,7 +70,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage }) => {
       .then(response => {
         // Check if the response is an image
         const contentType = response.headers.get("content-type");
-        console.log("Here: ", contentType);
+        //console.log("Here: ", contentType);
         if (contentType && contentType.includes("image")) {
           return response.blob();
         }

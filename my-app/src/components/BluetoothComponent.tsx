@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const BluetoothComponent = ({ onReceiveBluetoothMessage  }) => {
+const BluetoothComponent = ({ onReceiveBluetoothMessage, onResponseMessage }) => {
     // State and functions from BluetoothComponent
     const [connectedDevice, setConnectedDevice] = useState<BluetoothDevice | null>(null);
     const [dataCharacteristic, setDataCharacteristic] = useState<BluetoothRemoteGATTCharacteristic | null>(null);
@@ -10,6 +10,52 @@ const BluetoothComponent = ({ onReceiveBluetoothMessage  }) => {
     const log = (message: string) => {
         setMessages(prevMessages => [...prevMessages, message]);
     };
+
+    const MAX_CHUNK_SIZE = 20; // Adjust based on your device's capabilities
+
+const sendData = (dataToSend) => {
+    let data = new TextEncoder().encode(dataToSend + '\r\n');
+
+    // Function to send a chunk of data
+    const sendChunk = (chunk) => {
+        if (dataCharacteristic) {
+           
+            const method = dataCharacteristic.properties.writeWithoutResponse ? 'writeValueWithoutResponse' : 'writeValue';
+
+        console.log("Chunk: ", chunk)
+            return dataCharacteristic[method](chunk);
+        } else {
+            return Promise.reject('Characteristic not found.');
+        }
+    };
+
+    // Function to recursively send chunks
+    const sendChunks = (offset = 0) => {
+        if (offset >= data.byteLength) {
+            return Promise.resolve();
+        }
+        const chunk = data.slice(offset, offset + MAX_CHUNK_SIZE);
+        
+        return sendChunk(chunk).then(() => sendChunks(offset + MAX_CHUNK_SIZE));
+    };
+
+    // Start sending chunks
+    sendChunks().then(() => {
+        
+        console.log('Data sent: ' + dataToSend);
+    }).catch(error => {
+        log('Send Error: ' + error);
+    });
+};
+
+
+    useEffect(() => {
+        if (onResponseMessage && dataCharacteristic) {
+            
+            sendData(onResponseMessage);
+        }
+    }, [onResponseMessage, dataCharacteristic]);
+    
 
     const handleConnectClick = () => {
         navigator.bluetooth.requestDevice({
@@ -25,6 +71,7 @@ const BluetoothComponent = ({ onReceiveBluetoothMessage  }) => {
         .then(service => service.getCharacteristic('0000ffe1-0000-1000-8000-00805f9b34fb'))
         .then(characteristic => {
             log('Connected. Ready to send and receive data.');
+            console.log('Connected. Ready to send and receive data.')
             setDataCharacteristic(characteristic);
             characteristic.addEventListener('characteristicvaluechanged', handleCharacteristicValueChanged);
             return characteristic.startNotifications();

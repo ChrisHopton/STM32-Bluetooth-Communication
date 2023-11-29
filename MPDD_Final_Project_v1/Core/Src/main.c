@@ -18,14 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ili9163.h"
 #include "string.h"
 #include <stdint.h>
-#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,7 +39,6 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-__attribute__((__section__(".user_data"))) const char userConfig[64];
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -49,25 +46,22 @@ __attribute__((__section__(".user_data"))) const char userConfig[64];
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_tx;
 
-TIM_HandleTypeDef htim14;
-
 UART_HandleTypeDef huart6;
 
 /* USER CODE BEGIN PV */
-volatile uint32_t MSec = 0;
 
 uint8_t SPI_DMA_FL = 0;
 uint32_t SPI_DMA_CNT=1;
-char rxIn[100];
-uint8_t Rx_data[10]; // Buffer to store received data
+volatile uint8_t messageReady = 0;
 
 char keyChar = 0;
 uint16_t key = 0;
 
 char receiveBuffer[1]; // Global buffer for one byte of data
-char receivedData[1000]; // Global buffer for storing received messages
+char receivedData[5000]; // Global buffer for storing received messages
 uint8_t receivedDataIndex = 0; // Index for storing data in receivedData
-
+extern char writeString[50];
+uint8_t flag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -75,7 +69,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
-static void MX_TIM14_Init(void);
 static void MX_USART6_UART_Init(void);
 /* USER CODE BEGIN PFP */
 uint16_t keyPadScan(void);
@@ -116,95 +109,40 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_SPI1_Init();
-  MX_TIM14_Init();
   MX_USART6_UART_Init();
-  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
   ILI9163_init(0);
 
-
-//  char *message = "STM32 is ready\r\n";
-//   HAL_UART_Transmit(&huart6, (uint8_t *)message, strlen(message), HAL_MAX_DELAY); // Send message over USART6
-
-   // Start receiving data in interrupt mode
-
+  //HAL_UART_Receive_IT(&huart6, (uint8_t *)receiveBuffer, sizeof(receiveBuffer));
+   //uint8_t dataToSend[] = "How are you?";
    HAL_UART_Receive_IT(&huart6, (uint8_t *)receiveBuffer, sizeof(receiveBuffer));
-   uint8_t dataToSend[] = "My name is Chris";
+
+  // updateScreen("");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
   while (1)
   {
-
-//	  if(HAL_UART_Receive(&huart6, Rx_data, sizeof(Rx_data), 1000) == HAL_OK) {
-//	          // Process received data stored in Rx_data
-//		  uint8_t data[100]; //
-//		  // Assuming Rx_data is the buffer used in HAL_UART_Receive_IT
-//		          memcpy(data, Rx_data, sizeof(Rx_data)); // Copy received data to 'data' buffer
-//
-//	      }
-	 // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //char *dataToSend = "Hello Bluetooth!";
+	  if(keyChar != 0){
+		  key_pad(keyChar);
+		  keyChar = 0;
+	  }
+	  if(flag == 1){
+		  HAL_UART_Transmit(&huart6, writeString, strlen(writeString), 1000);
+		  flag = 0;
+	  }
+	  if (messageReady) {
+	     // Process the complete message
+	     ILI9163_newFrame();
+	     ILI9163_drawString(5, 5, Font_7x10, BLUE, receivedData);
+	     ILI9163_render();
 
-	  // Check if data is received from USB CDC
-	  // Check if data is received from USB CDC
-
-	  statePinStatus = HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_0); // Replace GPIOx with the actual GPIO port and STATE_PIN with the actual pin number
-
-	  if(statePinStatus == GPIO_PIN_SET) {
-	          // The module is connected to another Bluetooth device
-	          HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
-HAL_Delay(10000);
-	         // Data you want to send
-	       uint16_t dataSize = sizeof(dataToSend); // Calculate the size of the data
-//	       ILI9163_newFrame();
-//	       ILI9163_drawString(5,5,Font_7x10,BLUE,dataToSend);
-//	       ILI9163_render();
-
-	          // Call the function to transmit data
-	          transmitData(&huart6, dataToSend, dataSize);
-	          HAL_Delay(10000);
-	          uint8_t test[] = "Whats my name";
-	          uint16_t dataSize2 = sizeof(test); // Calculate the size of the data
-	          //	       ILI9163_newFrame();
-	          //	       ILI9163_drawString(5,5,Font_7x10,BLUE,dataToSend);
-	          //	       ILI9163_render();
-
-	          	          // Call the function to transmit data
-	          	          transmitData(&huart6, test, dataSize2);
-
-
-	          // Listen for incoming data (AT commands) from LightBlue app
-	        	         //char receivedData[100]; // Buffer for received data
-//	        	         HAL_UART_Receive(&huart6, (uint8_t *)receivedData, sizeof(receivedData),2000); // Non-blocking receive
-//
-//	        	         // Process received data and send AT command
-//	        	         if (strcmp(receivedData, "AT") == 0) {
-//	                  // Here, add code to get the PIN from the BLE module
-//	                  // For example, you might need to send an AT command to the module and read its response
-//	            	  char moduleResponse[100];
-//	            	  HAL_UART_Transmit(&huart6, (uint8_t *)"AT\r\n", strlen("AT\r\n"), 1000);
-//	            	  HAL_UART_Receive(&huart6, (uint8_t *)moduleResponse, sizeof(moduleResponse), 10000);
-//	                   // Buffer for module's response
-//	                  // Example: HAL_UART_Transmit(&huart6, (uint8_t *)"AT+PIN?", strlen("AT+PIN?"), 1000);
-//	                  // Example: HAL_UART_Receive(&huart6, (uint8_t *)moduleResponse, sizeof(moduleResponse), 2000);
-//
-//	                  // Transmit the response back to LightBlue app
-//	                  HAL_UART_Transmit(&huart6, (uint8_t *)moduleResponse, strlen(moduleResponse), 1000);
-//	              }
-	          }
-
-	      else {
-	         // The module is not connected
-	         HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET); // Turn off LED
-	     }
-
-
+	     messageReady = 0; // Reset the flag
+	   }
 
 
   /* USER CODE END 3 */
@@ -296,37 +234,6 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
-
-}
-
-/**
-  * @brief TIM14 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM14_Init(void)
-{
-
-  /* USER CODE BEGIN TIM14_Init 0 */
-
-  /* USER CODE END TIM14_Init 0 */
-
-  /* USER CODE BEGIN TIM14_Init 1 */
-
-  /* USER CODE END TIM14_Init 1 */
-  htim14.Instance = TIM14;
-  htim14.Init.Prescaler = 8000-1;
-  htim14.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim14.Init.Period = 1000;
-  htim14.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim14.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim14) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM14_Init 2 */
-
-  /* USER CODE END TIM14_Init 2 */
 
 }
 
@@ -436,6 +343,20 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
+  /*Configure GPIO pins : USB_SOF_Pin USB_ID_Pin USB_DM_Pin USB_DP_Pin */
+  GPIO_InitStruct.Pin = USB_SOF_Pin|USB_ID_Pin|USB_DM_Pin|USB_DP_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF10_OTG_FS;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : USB_VBUS_Pin */
+  GPIO_InitStruct.Pin = USB_VBUS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(USB_VBUS_GPIO_Port, &GPIO_InitStruct);
+
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
@@ -445,33 +366,38 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
-    HAL_UART_Transmit(huart, data, size, 1000); // 1000 is timeout duration
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) // Your TxCpltCallback
+{
+	SPI_DMA_CNT--;
+	if(SPI_DMA_CNT==0)
+	{
+		HAL_SPI_DMAStop(&hspi1);
+		SPI_DMA_CNT=1;
+		SPI_DMA_FL=1;
+	}
 }
+
+void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+
+	HAL_UART_Transmit(huart, data, size, 1000); // 1000 is timeout duration
+}
+
 
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   if (huart->Instance == USART6) {
-    // Print the received byte for debugging
-   // HAL_UART_Transmit(&huart6, (uint8_t *)receiveBuffer, 1, HAL_MAX_DELAY); // Echo the byte
-
-    // Append received byte to receivedData buffer
-    receivedData[receivedDataIndex++] = receiveBuffer[0];
-
-    // Check for end of message or buffer overflow
-    if (receiveBuffer[0] == '\n' || receivedDataIndex >= sizeof(receivedData) - 1) {
-      // Null-terminate the string and reset index
-      receivedData[receivedDataIndex] = '\0';
+    if (receiveBuffer[0] != '\n' && receivedDataIndex < sizeof(receivedData) - 1) {
+      receivedData[receivedDataIndex++] = receiveBuffer[0];
+    } else {
+      receivedData[receivedDataIndex] = '\0'; // Null-terminate
+      messageReady = 1; // Set the flag
       receivedDataIndex = 0;
-
-      // Echo received data back to the sender for confirmation
-      HAL_UART_Transmit(&huart6, (uint8_t *)receivedData, strlen(receivedData), HAL_MAX_DELAY);
+      //memset(receivedData, 0, sizeof(receivedData));
     }
-
-    // Re-enable UART receive interrupt for the next byte
     HAL_UART_Receive_IT(&huart6, (uint8_t *)receiveBuffer, sizeof(receiveBuffer));
   }
 }
+
 
 
 

@@ -56,28 +56,35 @@ function formatCodeSnippet(responseContent) {
 }
 
 async function generateChatMessage(userId, messages) {
-    // Add the new message to the conversation history
-    const conversation = conversationHistories[userId] || [];
-    conversation.push(...messages);
+    let conversation = conversationHistories[userId] || [];
 
-    const result = await chatClient.generateMessage({
-        model: "models/chat-bison-001",
+    // Add only new messages to the conversation history
+    // Assuming 'messages' contains only the new messages
+    conversation = [...conversation, ...messages];
+    console.log("convos: ", messages)
+    try {
+        const result = await chatClient.generateMessage({
+            model: "models/chat-bison-001",
+            prompt: { messages: conversation },
+        });
 
-        prompt: { 
-            messages: conversation },
-    });
+        if (result && result[0] && result[0].candidates && result[0].candidates[0]) {
+            const response = result[0].candidates[0].content;
+            conversation.push({ content: response, sender: 'api' });
+            conversationHistories[userId] = conversation;
 
-    // Add the AI's response to the conversation history
-    const response = result[0].candidates[0].content;
-    conversation.push({ content: response });
-
-    // Update the stored conversation history
-    conversationHistories[userId] = conversation;
-
-    // Format response for code snippets
-    const formattedResponse = formatCodeSnippet(response);
-    return formattedResponse;
+            const formattedResponse = formatCodeSnippet(response);
+            return formattedResponse;
+        } else {
+            console.error("Unexpected response structure:", result);
+            return ""; // or handle the error appropriately
+        }
+    } catch (error) {
+        console.error("Error in generateChatMessage:", error);
+        return ""; // Handle the error appropriately
+    }
 }
+
 
 
 
@@ -102,12 +109,14 @@ app.post('/chat-generate-message', async (req, res) => {
     
     try {
         const { userId, messages } = req.body;
+        //console.log("herererere" , req.body)
 
         if (!userId || !messages || !Array.isArray(messages)) {
             return res.status(400).send('User ID and messages array are required');
         }
 
         const responseContent = await generateChatMessage(userId, messages);
+        console.log("response is: ", responseContent)
 
         // Extract Python code from the response
         const codeRegex = /```python\n([\s\S]*?)```/; // Regex to extract code from markdown format
