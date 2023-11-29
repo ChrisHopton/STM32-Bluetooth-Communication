@@ -90,24 +90,7 @@ const BluetoothComponent = ({ onReceiveBluetoothMessage  }) => {
             </nav>
 
             {/* Bluetooth details popover (hidden or shown based on state) */}
-            {connectedDevice && (
-                <div className="popover-details">
-                    {/* You can structure this popover as needed */}
-                    <input 
-                        type="text" 
-                        className="border border-gray-400 p-2 rounded mb-2" 
-                        value={inputData} 
-                        onChange={(e) => setInputData(e.target.value)} 
-                    />
-                    <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" onClick={handleSendClick}>Send Data</button>
-
-                    <div className="mt-4 border border-gray-300 p-4 h-64 overflow-auto">
-                        {messages.map((msg, index) => (
-                            <div key={index} className="mb-2">{msg}</div>
-                        ))}
-                    </div>
-                </div>
-            )}
+            
         </div>
     );
 };

@@ -1,36 +1,31 @@
 import matplotlib.pyplot as plt
-import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 
-# Data from the Open Circuit Test
-field_current_oc = np.array([275, 320, 365, 380, 475, 570]) # Field current in amperes
-line_voltage_oc = np.array([12.2, 13.0, 13.8, 14.1, 15.2, 16.0]) # Line voltage in kV
-extrapolated_airgap_voltage_oc = np.array([13.3, 15.4, 17.5, 18.3, 22.8, 27.4]) # Extrapolated air-gap voltage in kV
+# Gyroscope data
+data = [
+    [0.1, -0.2, 0.3],
+    [0.2, -0.3, 0.4],
+    [0.3, -0.4, 0.5],
+    [0.4, -0.5, 0.6],
+    [0.5, -0.6, 0.7]
+]
 
-# Data from the Short Circuit Test
-field_current_sc = np.array([275, 320, 365, 380, 475, 570]) # Field current in amperes
-armature_current_sc = np.array([890, 1040, 1190, 1240, 1550, 1885]) # Armature current in amperes
+# Unpack the data
+x_data = [point[0] for point in data]
+y_data = [point[1] for point in data]
+z_data = [point[2] for point in data]
 
-# Plotting Open Circuit Test Results
-plt.figure(figsize=(14, 7))
+# Plotting
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
 
-# Plot for line voltage
-plt.subplot(1, 2, 1)
-plt.plot(field_current_oc, line_voltage_oc, marker='o', label='Line Voltage (kV)')
-plt.plot(field_current_oc, extrapolated_airgap_voltage_oc, marker='x', linestyle='--', label='Extrapolated Air-gap Voltage (kV)')
-plt.title('Open Circuit Test')
-plt.xlabel('Field Current (A)')
-plt.ylabel('Voltage (kV)')
-plt.grid(True)
-plt.legend()
+# Scatter plot
+ax.scatter(x_data, y_data, z_data, c='r', marker='o')
 
-# Plotting Short Circuit Test Results
-plt.subplot(1, 2, 2)
-plt.plot(field_current_sc, armature_current_sc, marker='s', color='red', label='Armature Current (A)')
-plt.title('Short Circuit Test')
-plt.xlabel('Field Current (A)')
-plt.ylabel('Armature Current (A)')
-plt.grid(True)
-plt.legend()
+# Set labels
+ax.set_xlabel('X Gyro')
+ax.set_ylabel('Y Gyro')
+ax.set_zlabel('Z Gyro')
 
-plt.tight_layout()
+# Show the plot
 plt.show()

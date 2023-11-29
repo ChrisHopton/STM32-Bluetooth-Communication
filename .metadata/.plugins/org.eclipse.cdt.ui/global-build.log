@@ -612,3 +612,228 @@ Finished building: default.size.stdout
  
 Finished building: MPDD_Final_Project_v1.list
  
+13:30:56 **** Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:164:54: warning: pointer targets in passing argument 5 of 'ILI9163_drawString' differ in signedness [-Wpointer-sign]
+  164 |                ILI9163_drawString(5,5,Font_7x10,BLUE,dataToSend);
+      |                                                      ^~~~~~~~~~
+      |                                                      |
+      |                                                      uint8_t * {aka unsigned char *}
+In file included from ../Core/Src/main.c:25:
+../Core/Src/ili9163.h:105:89: note: expected 'const char *' but argument is of type 'uint8_t *' {aka 'unsigned char *'}
+  105 | void ILI9163_drawString(uint8_t x, uint8_t y, FontDef font, uint16_t color, const char *string);
+      |                                                                             ~~~~~~~~~~~~^~~~~~
+../Core/Src/main.c:168:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  168 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:439:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  439 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:168:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  168 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  49432	    396	  50916	 100744	  18988	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 
+13:37:08 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:168:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  168 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:439:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  439 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:168:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  168 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  45744	    388	   9956	  56088	   db18	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 
+13:46:15 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:168:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  168 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:439:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  439 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:168:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  168 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  45740	    388	   9956	  56084	   db14	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 
+14:27:54 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:162:28: error: expected expression before ']' token
+  162 |                 dataToSend[] = "Whats my name"; // Data you want to send
+      |                            ^
+../Core/Src/main.c:169:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  169 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:440:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  440 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:169:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  169 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
+"make -j20 all" terminated with exit code 2. Build might be incomplete.
+14:28:15 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:170:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c:172:30: error: expected expression before ']' token
+  172 |                   dataToSend[] = "Whats my name";
+      |                              ^
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:441:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  441 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:170:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
+"make -j20 all" terminated with exit code 2. Build might be incomplete.
+14:28:38 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:170:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c:172:27: warning: unused variable 'dataToSend' [-Wunused-variable]
+  172 |                   uint8_t dataToSend[] = "Whats my name";
+      |                           ^~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:441:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  441 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:170:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  45768	    388	   9956	  56112	   db30	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 
+14:29:39 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:170:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c:172:27: warning: unused variable 'dataToSend' [-Wunused-variable]
+  172 |                   uint8_t dataToSend[] = "Whats my name";
+      |                           ^~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:441:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  441 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:170:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  45776	    388	   9956	  56120	   db38	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 
+14:38:47 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:170:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c:173:28: error: redefinition of 'dataSize'
+  173 |                   uint16_t dataSize = sizeof(dataToSend); // Calculate the size of the data
+      |                            ^~~~~~~~
+../Core/Src/main.c:164:25: note: previous definition of 'dataSize' with type 'uint16_t' {aka 'short unsigned int'}
+  164 |                uint16_t dataSize = sizeof(dataToSend); // Calculate the size of the data
+      |                         ^~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:448:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  448 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:170:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
+"make -j20 all" terminated with exit code 2. Build might be incomplete.
+14:40:46 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:170:19: warning: implicit declaration of function 'transmitData' [-Wimplicit-function-declaration]
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+../Core/Src/main.c: At top level:
+../Core/Src/main.c:448:6: warning: conflicting types for 'transmitData'; have 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  448 | void transmitData(UART_HandleTypeDef *huart, uint8_t *data, uint16_t size) {
+      |      ^~~~~~~~~~~~
+../Core/Src/main.c:170:19: note: previous implicit declaration of 'transmitData' with type 'void(UART_HandleTypeDef *, uint8_t *, uint16_t)' {aka 'void(struct __UART_HandleTypeDef *, unsigned char *, short unsigned int)'}
+  170 |                   transmitData(&huart6, dataToSend, dataSize);
+      |                   ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  45792	    388	   9956	  56136	   db48	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 

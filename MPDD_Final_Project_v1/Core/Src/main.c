@@ -129,10 +129,12 @@ int main(void)
    // Start receiving data in interrupt mode
 
    HAL_UART_Receive_IT(&huart6, (uint8_t *)receiveBuffer, sizeof(receiveBuffer));
+   uint8_t dataToSend[] = "My name is Chris";
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
 
@@ -157,15 +159,24 @@ int main(void)
 	  if(statePinStatus == GPIO_PIN_SET) {
 	          // The module is connected to another Bluetooth device
 	          HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Turn on LED
-//
-	       uint8_t dataToSend[] = "Say: Ghazal Is Halal "; // Data you want to send
+HAL_Delay(10000);
+	         // Data you want to send
 	       uint16_t dataSize = sizeof(dataToSend); // Calculate the size of the data
-
+//	       ILI9163_newFrame();
+//	       ILI9163_drawString(5,5,Font_7x10,BLUE,dataToSend);
+//	       ILI9163_render();
 
 	          // Call the function to transmit data
 	          transmitData(&huart6, dataToSend, dataSize);
 	          HAL_Delay(10000);
+	          uint8_t test[] = "Whats my name";
+	          uint16_t dataSize2 = sizeof(test); // Calculate the size of the data
+	          //	       ILI9163_newFrame();
+	          //	       ILI9163_drawString(5,5,Font_7x10,BLUE,dataToSend);
+	          //	       ILI9163_render();
 
+	          	          // Call the function to transmit data
+	          	          transmitData(&huart6, test, dataSize2);
 
 
 	          // Listen for incoming data (AT commands) from LightBlue app
