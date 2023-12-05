@@ -15,7 +15,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage, onSendR
   const [useChatModel, setUseChatModel] = useState(true);
   const [userId, setUserId] = useState('');
   const [gyroData, setGyroData] = useState([]);
-
+  const [activeTab, setActiveTab] = useState('chat');
 
   useEffect(() => {
     setUserId(generateUserId());
@@ -142,76 +142,77 @@ const handleBluetoothMessage = (bluetoothMessage) => {
 
   return (
     <div className="flex flex-col items-center justify-center w-screen min-h-screen bg-gray-100 text-gray-800 p-10">
+    {/* Tab container with modern styling */}
+    <div className="mb-4 flex border-b">
       
-      <div className="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden">
-        <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
-        {messages.map((msg, index) => (
-    <div key={index} className={`flex w-full mt-2 space-x-3 max-w-xs ${msg.sender === 'user' ? 'ml-auto justify-end' : ''}`}>
-        <div className={`${msg.sender === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'} p-3 rounded-lg`}>
-        {msg.sender === 'gyro' ? (
-    <div key={index}>Gyroscope Data: {msg.content}</div>  // Visualization component goes here
-  ) : (
-                <ReactMarkdown components={components}>{msg.content}</ReactMarkdown>
-            )}
-        </div>
-        <span className="text-xs text-gray-500 leading-none">Just now</span>
+      <button
+        className={`px-4 py-2 text-sm font-medium ${activeTab === 'chat' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
+        onClick={() => setActiveTab('chat')}
+      >
+        Chat
+      </button>
+      <button
+        className={`px-4 py-2 text-sm font-medium ${activeTab === 'gyro' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
+        onClick={() => setActiveTab('gyro')}
+      >
+        Gyroscope
+      </button>
     </div>
-))}
-
-        </div>
-
-        <div className="bg-gray-300 p-4 flex">
-          <input
-            className="flex items-center h-10 w-full rounded px-3 text-sm"
-            type="text"
-            placeholder="Type your message…"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                sendMessage();
-              }
-            }}
-          />
-
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
-
-            onClick={sendMessage}
-          >
-            Send
-          </button>
-          <label className="relative inline-flex cursor-pointer items-center ml-2">
-          <input
-            type="checkbox"
-            className="peer sr-only"
-            checked={!useChatModel}
-            onChange={() => setUseChatModel(!useChatModel)}
-          />
-          <div
-            className="peer flex h-8 items-center gap-4 rounded-full bg-orange-600 px-3 after:absolute after:left-1 after:h-6 after:w-16 after:rounded-full after:bg-white/50 after:transition-all after:content-[''] peer-checked:bg-slate-700 peer-checked:after:translate-x-full peer-focus:outline-none dark:border-slate-700 dark:bg-slate-700 text-sm text-white"
-          >
-            <span>Google</span>
-            <span>OpenAI</span>
+  
+      {/* Conditional rendering based on the active tab */}
+      {activeTab === 'chat' ? (
+    
+        <div className="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden">
+          <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
+            {messages.map((msg, index) => (
+              <div key={index} className={`flex w-full mt-2 space-x-3 max-w-xs ${msg.sender === 'user' ? 'ml-auto justify-end' : ''}`}>
+                <div className={`${msg.sender === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'} p-3 rounded-lg`}>
+                  {msg.sender === 'gyro' ? (
+                    <div key={index}>Gyroscope Data: {msg.content}</div>
+                  ) : (
+                    <ReactMarkdown components={components}>{msg.content}</ReactMarkdown>
+                  )}
+                </div>
+                <span className="text-xs text-gray-500 leading-none">Just now</span>
+              </div>
+            ))}
           </div>
-        </label>
+  
+          <div className="bg-gray-300 p-4 flex">
+            <input
+              className="flex items-center h-10 w-full rounded px-3 text-sm"
+              type="text"
+              placeholder="Type your message…"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  sendMessage();
+                }
+              }}
+            />
+  
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+              onClick={sendMessage}
+            >
+              Send
+            </button>
+          </div>
         </div>
-      </div>
-
-            <div className="gyroscope-plot-container">
-              
-            {gyroData && gyroData.length > 0 ? (
-        <GyroscopePlot data={gyroData} />
-    ) : (
-        <p>No gyroscope data available.</p> // Or any other fallback content
-    )}
-
-            </div>
-
+      ) : (
+        <div className="gyroscope-plot-container">
+          {gyroData && gyroData.length > 0 ? (
+            <GyroscopePlot data={gyroData} />
+          ) : (
+            <p>No gyroscope data available.</p>
+          )}
+        </div>
+      )}
     </div>
-
   );
-};
+          };
+  
 
 export default ChatComponent;
 

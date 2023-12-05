@@ -54,26 +54,42 @@ void MPU6050_Init(I2C_HandleTypeDef *hi2c)
 
 
 
-void readGyroData(I2C_HandleTypeDef *hi2c, int16_t* x, int16_t* y, int16_t* z) {
+#define N 1600  // Number of readings for moving average
 
+int16_t x_buffer[N] = {0};
+int16_t y_buffer[N] = {0};
+int16_t z_buffer[N] = {0};
+int buffer_index = 0;
+
+void readGyroData(I2C_HandleTypeDef *hi2c, int16_t* x, int16_t* y, int16_t* z) {
     uint8_t rawData[6];
 
-
-    // Read GYRO_XOUT_H and GYRO_XOUT_L
+    // Read gyro data
     HAL_I2C_Mem_Read(hi2c, MPU6050_I2C_ADDRESS, GYRO_XOUT_H, 1, &rawData[0], 2, HAL_MAX_DELAY);
-    *x = (int16_t)( (rawData[0] << 8) | rawData[1] );
-
-    // Read GYRO_YOUT_H and GYRO_YOUT_L
     HAL_I2C_Mem_Read(hi2c, MPU6050_I2C_ADDRESS, GYRO_YOUT_H, 1, &rawData[2], 2, HAL_MAX_DELAY);
-    *y = (int16_t)( (rawData[2] << 8) | rawData[3] );
-
-    // Read GYRO_ZOUT_H and GYRO_ZOUT_L
     HAL_I2C_Mem_Read(hi2c, MPU6050_I2C_ADDRESS, GYRO_ZOUT_H, 1, &rawData[4], 2, HAL_MAX_DELAY);
-    *z = (int16_t)( (rawData[4] << 8) | rawData[5] );
 
-    // MAYBE ADD FILTER BLEOW TO KEEP DATA FROM JUMPING AROUND
-    // MAYBE AVERAGE OF LAST 10 POINTS??
+    // Convert to 16-bit values
+    x_buffer[buffer_index] = (int16_t)((rawData[0] << 8) | rawData[1]);
+    y_buffer[buffer_index] = (int16_t)((rawData[2] << 8) | rawData[3]);
+    z_buffer[buffer_index] = (int16_t)((rawData[4] << 8) | rawData[5]);
 
-return;
+    // Compute the average of the last N readings
+    int32_t x_sum = 0, y_sum = 0, z_sum = 0;
+    for (int i = 0; i < N; i++) {
+        x_sum += x_buffer[i];
+        y_sum += -y_buffer[i];
+        z_sum += z_buffer[i];
+    }
+
+    *x = x_sum / N;
+    *y = y_sum / N;
+    *z = z_sum / N;
+
+    // Update buffer index
+    buffer_index = (buffer_index + 1) % N;
+
+    return;
 }
+
 

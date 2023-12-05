@@ -2,60 +2,74 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const GyroscopePlot = ({ data }) => {
+const GyroscopePlot = ({ data, scale = 0.1}) => {
     const mountRef = useRef(null);
     const lineRef = useRef(null);
 
     useEffect(() => {
-        const width = 400; // Adjust width as needed
-        const height = 400; // Adjust height as needed
+        const width = 800;
+        const height = 800;
 
+        // Scene setup
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-        camera.position.set(0, 0, 15);
+        scene.background = new THREE.Color(0xFFFFFF); // White background like MATLAB
 
+        // Camera setup (MATLAB-like angle)
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        camera.position.set(50, 50, 50); // Elevated angle
+        camera.lookAt(0, 0, 0);
+
+        // Renderer setup
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(width, height);
-        renderer.setClearColor(0xffffff, 1); // Set background color to white
         mountRef.current.appendChild(renderer.domElement);
 
-        // Add GridHelper
-        const gridHelper = new THREE.GridHelper(10, 10);
+        // Grid Helper (MATLAB style)
+        const gridHelper = new THREE.GridHelper(100, 20, 0xBBBBBB, 0xBBBBBB);
         scene.add(gridHelper);
 
-        // Create an initial empty line
+        // Axes setup
+        const axesHelper = new THREE.AxesHelper(50);
+        scene.add(axesHelper);
+
+        // Line setup
+        const material = new THREE.LineBasicMaterial({ color: 0x0000FF }); // Blue line like MATLAB
         const geometry = new THREE.BufferGeometry();
-        const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
         lineRef.current = new THREE.Line(geometry, material);
         scene.add(lineRef.current);
 
-        // OrbitControls
+        // OrbitControls for interactivity (optional)
         const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableZoom = true;
+        controls.enableRotate = true;
 
+        // Lighting (subtle to match MATLAB's style)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+        scene.add(ambientLight);
+
+        // Animation loop
         const animate = () => {
             requestAnimationFrame(animate);
-            controls.update(); // Only required if controls.enableDamping or controls.autoRotate are set to true
+            controls.update();
             renderer.render(scene, camera);
         };
-
         animate();
 
-        // Clean up
+        // Cleanup
         return () => {
             mountRef.current.removeChild(renderer.domElement);
         };
-    }, []); // Empty dependency array, so this effect runs only once
+    }, []);
 
     useEffect(() => {
-        // Update line geometry with new data
         if (lineRef.current) {
-            const points = data.map(d => new THREE.Vector3(d.x, d.y, d.z));
-            lineRef.current.geometry.dispose(); // Dispose old geometry
+            const points = data.map(d => new THREE.Vector3(d.x * scale, d.y * scale, d.z * scale));
+            lineRef.current.geometry.dispose();
             lineRef.current.geometry = new THREE.BufferGeometry().setFromPoints(points);
         }
-    }, [data]); // This effect runs when data changes
+    }, [data, scale]);
 
-    return <div ref={mountRef} style={{ width: '400px', height: '400px' }} />;
+    return <div ref={mountRef} style={{ width: '800px', height: '800px' }} />;
 };
 
 export default GyroscopePlot;

@@ -146,7 +146,7 @@ int main(void)
 
 	  	          // Transmit the formatted string over CDC
 	  	        HAL_UART_Transmit(&huart6,(uint8_t*)str_buffer, strlen(str_buffer), 1000);
-	  	          HAL_Delay(5000);
+	  	          HAL_Delay(50);
 
 
 	  if(keyChar != 0){
