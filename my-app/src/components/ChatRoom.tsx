@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import GyroscopePlot from './gyroscopePlot';
 
 interface ChatComponentProps {
   bluetoothMessage: string;
@@ -13,42 +14,66 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage, onSendR
   const [inputText, setInputText] = useState('');
   const [useChatModel, setUseChatModel] = useState(true);
   const [userId, setUserId] = useState('');
+  const [gyroData, setGyroData] = useState([]);
+
 
   useEffect(() => {
     setUserId(generateUserId());
   }, []);
 
-  // Function to handle messages received from Bluetooth
-  const handleBluetoothMessage = (bluetoothMessage) => {
-    if (!bluetoothMessage.trim()) return;
+  const isGyroscopeData = (message) => {
+    // Implement a check to determine if the message is gyroscope data
+    // For example, a simple check could be based on the format of the message
+    return message.split(',').length === 3;
+};
 
+// Function to parse gyroscope data
+const parseGyroscopeData = (message) => {
+  const cleanedMessage = message.replace(/[\[\]\s]/g, '');
+  const [x, y, z] = cleanedMessage.split(',').map(Number);
+  setGyroData(prevData => [...prevData, { x, y, z }]);
+  console.log("Gyroscope Data: ", { x, y, z }); // Add this line for debugging
+};
+
+
+const sendApiRequest = (updatedMessages) => {
+  const endpoint = useChatModel ? 'http://localhost:3001/chat-generate-message' : 'http://localhost:3001/data-generate-message';
+
+  fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId, messages: updatedMessages }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      const apiResponse = data.message || data.content;
+      setMessages(prev => [...prev, { content: data.message || data.content, sender: 'api' }]);
+      onSendResponseMessage(apiResponse);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+};
+
+
+
+const handleBluetoothMessage = (bluetoothMessage) => {
+  if (!bluetoothMessage.trim()) return;
+
+  if (isGyroscopeData(bluetoothMessage)) {
+    parseGyroscopeData(bluetoothMessage);
+  } else {
+    // Handle regular messages
     const newMessage = { content: bluetoothMessage, sender: 'user' };
-    //console.log(newMessage)
     const updatedMessages = [...messages, newMessage];
-    //console.log(updatedMessages)
     setMessages(prevMessages => [...prevMessages, newMessage]);
 
-    const endpoint = useChatModel ? 'http://localhost:3001/chat-generate-message' : 'http://localhost:3001/data-generate-message';
-
-    fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId, messages: updatedMessages }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        const apiResponse = data.message || data.content;
-        setMessages(prev => [...prev, { content: data.message || data.content, sender: 'api' }]);
-      
-        // Send the API response back to BluetoothComponent
-        onSendResponseMessage(apiResponse);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  };
+    // Make an API call for regular messages
+    sendApiRequest(updatedMessages);
+  }
+};
 
 
   const sendMessage = () => {
@@ -83,7 +108,7 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage, onSendR
           setMessages(prev => [...prev, { content: `<img src="${imageUrl}" alt="Generated Plot"/>`, sender: 'api' }]);
         } else {
           // Handle non-image response
-          setMessages(prev => [...prev, { content: data.message || data.content, sender: 'api' }]);
+          setMessages(prev => [...prev, { content: data.message || data.content, sender: 'assistant' }]);
         }
       })
       .catch(error => {
@@ -121,17 +146,18 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage, onSendR
       <div className="flex flex-col flex-grow w-full max-w-xl bg-white shadow-xl rounded-lg overflow-hidden">
         <div className="flex flex-col flex-grow h-0 p-4 overflow-auto">
         {messages.map((msg, index) => (
-  <div key={index} className={`flex w-full mt-2 space-x-3 max-w-xs ${msg.sender === 'user' ? 'ml-auto justify-end' : ''}`}>
-    <div className={`${msg.sender === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'} p-3 rounded-lg`}>
-      {/* Render image if message content is an image URL, else render as markdown */}
-      {msg.content.startsWith('<img') ? 
-        <div dangerouslySetInnerHTML={{ __html: msg.content }} /> :
-        <ReactMarkdown components={components}>{msg.content}</ReactMarkdown>
-      }
+    <div key={index} className={`flex w-full mt-2 space-x-3 max-w-xs ${msg.sender === 'user' ? 'ml-auto justify-end' : ''}`}>
+        <div className={`${msg.sender === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-black'} p-3 rounded-lg`}>
+        {msg.sender === 'gyro' ? (
+    <div key={index}>Gyroscope Data: {msg.content}</div>  // Visualization component goes here
+  ) : (
+                <ReactMarkdown components={components}>{msg.content}</ReactMarkdown>
+            )}
+        </div>
+        <span className="text-xs text-gray-500 leading-none">Just now</span>
     </div>
-    <span className="text-xs text-gray-500 leading-none">Just now</span>
-  </div>
 ))}
+
         </div>
 
         <div className="bg-gray-300 p-4 flex">
@@ -171,7 +197,19 @@ const ChatComponent: React.FC<ChatComponentProps> = ({ bluetoothMessage, onSendR
         </label>
         </div>
       </div>
+
+            <div className="gyroscope-plot-container">
+              
+            {gyroData && gyroData.length > 0 ? (
+        <GyroscopePlot data={gyroData} />
+    ) : (
+        <p>No gyroscope data available.</p> // Or any other fallback content
+    )}
+
+            </div>
+
     </div>
+
   );
 };
 

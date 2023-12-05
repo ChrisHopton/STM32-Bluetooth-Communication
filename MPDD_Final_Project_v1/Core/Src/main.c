@@ -23,6 +23,7 @@
 /* USER CODE BEGIN Includes */
 #include "ili9163.h"
 #include "string.h"
+#include "mpu6050.h"
 #include <stdint.h>
 /* USER CODE END Includes */
 
@@ -43,6 +44,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 
+I2C_HandleTypeDef hi2c2;
+
 SPI_HandleTypeDef hspi1;
 DMA_HandleTypeDef hdma_spi1_tx;
 
@@ -62,6 +65,9 @@ char receivedData[5000]; // Global buffer for storing received messages
 uint8_t receivedDataIndex = 0; // Index for storing data in receivedData
 extern char writeString[50];
 uint8_t flag = 0;
+int16_t gyroX = 0;
+	      int16_t gyroY = 0;
+	      int16_t gyroZ = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,6 +76,7 @@ static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_USART6_UART_Init(void);
+static void MX_I2C2_Init(void);
 /* USER CODE BEGIN PFP */
 uint16_t keyPadScan(void);
 /* USER CODE END PFP */
@@ -110,12 +117,14 @@ int main(void)
   MX_DMA_Init();
   MX_SPI1_Init();
   MX_USART6_UART_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   ILI9163_init(0);
 
   //HAL_UART_Receive_IT(&huart6, (uint8_t *)receiveBuffer, sizeof(receiveBuffer));
    //uint8_t dataToSend[] = "How are you?";
    HAL_UART_Receive_IT(&huart6, (uint8_t *)receiveBuffer, sizeof(receiveBuffer));
+   MPU6050_Init(&hi2c2);
 
   // updateScreen("");
   /* USER CODE END 2 */
@@ -127,6 +136,19 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  	  	  	  readGyroData(&hi2c2, &gyroX, &gyroY, &gyroZ);
+
+	  	          char str_buffer[100];  // Made the buffer bigger just in case
+
+	  	          // Format gyro data into a comma-separated list
+	  	          sprintf(str_buffer, "[%d,%d,%d]\n", gyroX, gyroY, gyroZ);
+
+	  	          // Transmit the formatted string over CDC
+	  	        HAL_UART_Transmit(&huart6,(uint8_t*)str_buffer, strlen(str_buffer), 1000);
+	  	          HAL_Delay(5000);
+
+
 	  if(keyChar != 0){
 		  key_pad(keyChar);
 		  keyChar = 0;
@@ -146,7 +168,8 @@ int main(void)
 
 
   /* USER CODE END 3 */
-}}
+}
+}
 
 /**
   * @brief System Clock Configuration
@@ -195,6 +218,54 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief I2C2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C2_Init(void)
+{
+
+  /* USER CODE BEGIN I2C2_Init 0 */
+
+  /* USER CODE END I2C2_Init 0 */
+
+  /* USER CODE BEGIN I2C2_Init 1 */
+
+  /* USER CODE END I2C2_Init 1 */
+  hi2c2.Instance = I2C2;
+  hi2c2.Init.Timing = 0x00808CD2;
+  hi2c2.Init.OwnAddress1 = 0;
+  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c2.Init.OwnAddress2 = 0;
+  hi2c2.Init.OwnAddress2Masks = I2C_OA2_NOMASK;
+  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Analogue filter
+  */
+  if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Digital filter
+  */
+  if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C2_Init 2 */
+
+  /* USER CODE END I2C2_Init 2 */
+
 }
 
 /**
@@ -302,6 +373,7 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOE_CLK_ENABLE();
   __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();

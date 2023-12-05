@@ -46,6 +46,15 @@ async function main() {
   console.log("OPEN AI: ",completion.choices[0]);
 }
 
+// Function to check if the message is gyroscope data
+function isGyroscopeData(message) {
+    // Check if the message is an array of three numbers
+    return Array.isArray(message.content) && 
+           message.content.length === 3 &&
+           message.content.every(num => typeof num === 'number');
+}
+
+
 
 // Function to format code snippets in the response
 function formatCodeSnippet(responseContent) {
@@ -70,7 +79,7 @@ async function generateChatMessage(userId, messages) {
 
         if (result && result[0] && result[0].candidates && result[0].candidates[0]) {
             const response = result[0].candidates[0].content;
-            conversation.push({ content: response, sender: 'api' });
+            conversation.push({ content: response, sender: 'assistant' });
             conversationHistories[userId] = conversation;
 
             const formattedResponse = formatCodeSnippet(response);
@@ -89,20 +98,36 @@ async function generateChatMessage(userId, messages) {
 
 
 // Function to generate text message
-async function generateTextMessage(promptText) {
+async function generateTextMessage(userId, messages) {
+    let conversation = conversationHistories[userId] || [];
+    conversation = [...conversation, ...messages];
+    console.log(conversation.map(msg => ({ role: msg.sender, content: msg.content })));
+
+    if (messages.length > 0 && isGyroscopeData(messages[messages.length - 1])) {
+        // Handle gyroscope data here
+        // For example, you can generate a request to visualize the data
+        // or store the data for later processing
+        console.log("Gyroscope data received:", messages[messages.length - 1].content);
+        return "Gyroscope data processing..."; // Placeholder response
+    }
+
     try {
-        //console.log("here,", promptText)
         const completion = await openai.chat.completions.create({
-            messages: [{"role": "user", "content": promptText}],
-            model: "gpt-4-1106-preview",
+            messages: conversation.map(msg => ({ role: msg.sender, content: msg.content })),
+            model: "gpt-3.5-turbo",
         });
-       // console.log("herere", completion.choices[0].message.content)
-        return completion.choices[0].message.content;
+
+        const responseContent = completion.choices[0].message.content;
+        conversation.push({ content: responseContent, sender: 'assistant' });
+        conversationHistories[userId] = conversation;
+
+        return responseContent;
     } catch (error) {
         console.error("Error generating message:", error);
         throw error;
     }
 }
+
 
 
 app.post('/chat-generate-message', async (req, res) => {
@@ -115,7 +140,7 @@ app.post('/chat-generate-message', async (req, res) => {
             return res.status(400).send('User ID and messages array are required');
         }
 
-        const responseContent = await generateChatMessage(userId, messages);
+       const responseContent = await generateChatMessage(userId, messages);
         console.log("response is: ", responseContent)
 
         // Extract Python code from the response
@@ -153,7 +178,7 @@ app.post('/chat-generate-message', async (req, res) => {
                 res.json({ content: responseContent, codeOutput: 'Error executing Python script: ' + pythonError.message });
             }
         } else {
-            console.log("I AM HERE!!!!!5")
+            //console.log("I AM HERE!!!!!5")
             res.json({ content: responseContent });
         }
 
@@ -168,14 +193,16 @@ let temp;
 
 app.post('/data-generate-message', async (req, res) => {
     try {
-        const promptText = req.body.messages[0].content;
-       // console.log(promptText)
+        const promptText = req.body.messages[req.body.messages.length - 1].content;
+        const { userId, messages } = req.body;
+        
+      //console.log(messages)
         if (!promptText) {
             return res.status(400).send('No prompt text specified');
         }
 
-        const responseContent = await generateTextMessage(promptText);
-        console.log(responseContent);
+        const responseContent = await generateTextMessage(userId, messages);
+       // console.log(responseContent);
 
         // Extract Python code from the response
         const codeRegex = /```python\n([\s\S]*?)```/; // Regex to extract code from markdown format
