@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
-const GyroscopePlot = ({ data, scale = 0.1}) => {
+const GyroscopePlot = ({ data, scale = 0.1 }) => {
     const mountRef = useRef(null);
     const lineRef = useRef(null);
 
@@ -48,8 +48,9 @@ const GyroscopePlot = ({ data, scale = 0.1}) => {
         scene.add(ambientLight);
 
         // Animation loop
+        let frameId;
         const animate = () => {
-            requestAnimationFrame(animate);
+            frameId = requestAnimationFrame(animate);
             controls.update();
             renderer.render(scene, camera);
         };
@@ -57,7 +58,20 @@ const GyroscopePlot = ({ data, scale = 0.1}) => {
 
         // Cleanup
         return () => {
-            mountRef.current.removeChild(renderer.domElement);
+            cancelAnimationFrame(frameId);
+            if (mountRef.current && renderer.domElement) {
+                mountRef.current.removeChild(renderer.domElement);
+            }
+            scene.remove(gridHelper);
+            scene.remove(axesHelper);
+            scene.remove(lineRef.current);
+            geometry.dispose();
+            material.dispose();
+            if (lineRef.current) {
+                lineRef.current.geometry.dispose();
+            }
+            renderer.dispose();
+            controls.dispose(); // Don't forget to dispose the controls as well
         };
     }, []);
 

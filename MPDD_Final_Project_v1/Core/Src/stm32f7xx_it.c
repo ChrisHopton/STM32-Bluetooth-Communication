@@ -365,7 +365,7 @@ char KeyPadGetChar(uint16_t	key)
 					return 'C';
 
 			case 0x0808:
-					return 'D';
+					return 'd';
 
 			case 0x0108:
 					return '*';

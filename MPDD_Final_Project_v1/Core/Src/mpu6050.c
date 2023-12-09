@@ -78,7 +78,7 @@ void readGyroData(I2C_HandleTypeDef *hi2c, int16_t* x, int16_t* y, int16_t* z) {
     int32_t x_sum = 0, y_sum = 0, z_sum = 0;
     for (int i = 0; i < N; i++) {
         x_sum += x_buffer[i];
-        y_sum += -y_buffer[i];
+        y_sum += y_buffer[i];
         z_sum += z_buffer[i];
     }
 

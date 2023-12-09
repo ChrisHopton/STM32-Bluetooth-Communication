@@ -18,10 +18,11 @@ const ParentComponent = () => {
 
   return (
     <div>
+      <div  className='sticky top-0 dark:bg-slate-900 '>
       <BluetoothComponent 
         onReceiveBluetoothMessage={onReceiveBluetoothMessage}
         onResponseMessage={responseMessage}
-      />
+      /></div>
       <ChatComponent 
         bluetoothMessage={bluetoothMessage} 
         onSendResponseMessage={onSendResponseMessage}

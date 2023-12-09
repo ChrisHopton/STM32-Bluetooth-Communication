@@ -7,7 +7,7 @@ const { PythonShell } = require('python-shell');
 require('dotenv').config();
 
 const { DiscussServiceClient, TextServiceClient } = require("@google-ai/generativelanguage");
-const { GoogleAuth } = require("google-auth-library");
+const { GoogleAuth, safety_settings} = require("google-auth-library");
 
 const app = express();
 app.use(cors());
@@ -68,29 +68,30 @@ async function generateChatMessage(userId, messages) {
     let conversation = conversationHistories[userId] || [];
 
     // Add only new messages to the conversation history
-    // Assuming 'messages' contains only the new messages
     conversation = [...conversation, ...messages];
     console.log("convos: ", messages)
     try {
         const result = await chatClient.generateMessage({
             model: "models/chat-bison-001",
             prompt: { messages: conversation },
+            
         });
-
-        if (result && result[0] && result[0].candidates && result[0].candidates[0]) {
+        console.log("Here I am:" , result[0].filters, "total filter:")
+        if (result[0].candidates[0].content) {
             const response = result[0].candidates[0].content;
             conversation.push({ content: response, sender: 'assistant' });
             conversationHistories[userId] = conversation;
 
-            const formattedResponse = formatCodeSnippet(response);
-            return formattedResponse;
+            //const formattedResponse = formatCodeSnippet(response);
+            //return formattedResponse;
+            return response;
         } else {
             console.error("Unexpected response structure:", result);
-            return ""; // or handle the error appropriately
+            return "Seems I'm having issues."; 
         }
     } catch (error) {
         console.error("Error in generateChatMessage:", error);
-        return ""; // Handle the error appropriately
+        return "My safety settings have blocked me from answering!"; 
     }
 }
 

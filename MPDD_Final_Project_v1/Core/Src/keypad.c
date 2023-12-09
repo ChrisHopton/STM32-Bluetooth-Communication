@@ -329,7 +329,22 @@ void key_pad(char keyChar){
 
 				case '*':
 					flag = 1;
-
+					keyChar = 0;
 					break;
+				case 'd':
+
+					if (flag == 2){
+						flag = 0;
+						keyChar = 0;
+						break;
+					}
+					else{
+						flag = 2;
+						writeString[0] = 'Now Transmitting Gyroscope Data...';
+						updateScreen(writeString);
+						keyChar = 0;
+						break;
+					}
+
 	}
 }

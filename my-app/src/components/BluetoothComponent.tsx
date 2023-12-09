@@ -125,10 +125,10 @@ const sendData = (dataToSend) => {
     };
 
     return (
-        <div>
+        <div className='bg-gray-300'>
             {/* Navbar code */}
-            <nav className="flex dark:bg-slate-900 items-center relative justify-between bg-white px-5 py-6 w-full">
-                {/* Navbar content */}
+            <nav className="flex sticky top-20 z-50 bg-white rounded-xl shadow-md items-center justify-between bg-white px-5 py-6 w-full">
+           {/* Navbar content */}
                 {/* Bluetooth connect button */}
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2" onClick={handleConnectClick}>
                     {connectedDevice ? `Connected: ${connectedDevice.name}` : 'Connect Bluetooth'}

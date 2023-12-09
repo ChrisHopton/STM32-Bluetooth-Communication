@@ -35,3 +35,103 @@ arm-none-eabi-size   MPDD_Final_Project_v1.elf
   35476	    148	  48356	  83980	  1480c	MPDD_Final_Project_v1.elf
 Finished building: default.size.stdout
  
+22:07:17 **** Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/keypad.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/keypad.d" -MT"Core/Src/keypad.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/keypad.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/stm32f7xx_it.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f7xx_it.d" -MT"Core/Src/stm32f7xx_it.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f7xx_it.o"
+../Core/Src/stm32f7xx_it.c: In function 'KeyPadGetChar':
+../Core/Src/stm32f7xx_it.c:368:48: warning: multi-character character constant [-Wmultichar]
+  368 |                                         return 'Data';
+      |                                                ^~~~~~
+../Core/Src/stm32f7xx_it.c:368:48: warning: unsigned conversion from 'int' to 'char' changes value from '1147237473' to '97' [-Woverflow]
+../Core/Src/stm32f7xx_it.c:376:1: warning: control reaches end of non-void function [-Wreturn-type]
+  376 | }
+      | ^
+../Core/Src/keypad.c:8:8: warning: type defaults to 'int' in declaration of 'flag' [-Wimplicit-int]
+    8 | extern flag;
+      |        ^~~~
+../Core/Src/keypad.c: In function 'key_pad':
+../Core/Src/keypad.c:334:38: warning: multi-character character constant [-Wmultichar]
+  334 |                                 case 'Data':
+      |                                      ^~~~~~
+../Core/Src/keypad.c:334:33: warning: case label value exceeds maximum value for type [-Wswitch-outside-range]
+  334 |                                 case 'Data':
+      |                                 ^~~~
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:147:27: warning: implicit declaration of function 'key_pad' [-Wimplicit-function-declaration]
+  147 |                           key_pad(keyChar);
+      |                           ^~~~~~~
+../Core/Src/main.c:151:54: warning: pointer targets in passing argument 2 of 'HAL_UART_Transmit' differ in signedness [-Wpointer-sign]
+  151 |                           HAL_UART_Transmit(&huart6, writeString, strlen(writeString), 1000);
+      |                                                      ^~~~~~~~~~~
+      |                                                      |
+      |                                                      char *
+In file included from ../Core/Inc/stm32f7xx_hal_conf.h:415,
+                 from ../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal.h:29,
+                 from ../Core/Inc/main.h:30,
+                 from ../Core/Src/main.c:20:
+../Drivers/STM32F7xx_HAL_Driver/Inc/stm32f7xx_hal_uart.h:1553:79: note: expected 'const uint8_t *' {aka 'const unsigned char *'} but argument is of type 'char *'
+ 1553 | HAL_StatusTypeDef HAL_UART_Transmit(UART_HandleTypeDef *huart, const uint8_t *pData, uint16_t Size, uint32_t Timeout);
+      |                                                                ~~~~~~~~~~~~~~~^~~~~
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  35724	    148	  57964	  93836	  16e8c	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 
+22:09:37 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/keypad.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/keypad.d" -MT"Core/Src/keypad.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/keypad.o"
+arm-none-eabi-gcc "../Core/Src/stm32f7xx_it.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/stm32f7xx_it.d" -MT"Core/Src/stm32f7xx_it.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/stm32f7xx_it.o"
+../Core/Src/keypad.c:8:8: warning: type defaults to 'int' in declaration of 'flag' [-Wimplicit-int]
+    8 | extern flag;
+      |        ^~~~
+../Core/Src/keypad.c: In function 'key_pad':
+../Core/Src/keypad.c:341:58: warning: character constant too long for its type
+  341 |                                         writeString[0] = 'Now Transmitting Gyroscope Data...';
+      |                                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/keypad.c:341:58: warning: unsigned conversion from 'int' to 'char' changes value from '1630416430' to '46' [-Woverflow]
+../Core/Src/stm32f7xx_it.c: In function 'KeyPadGetChar':
+../Core/Src/stm32f7xx_it.c:376:1: warning: control reaches end of non-void function [-Wreturn-type]
+  376 | }
+      | ^
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  35820	    148	  57964	  93932	  16eec	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 
+22:12:58 **** Incremental Build of configuration Debug for project MPDD_Final_Project_v1 ****
+make -j20 all 
+arm-none-eabi-gcc "../Core/Src/keypad.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/keypad.d" -MT"Core/Src/keypad.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/keypad.o"
+arm-none-eabi-gcc "../Core/Src/mpu6050.c" -mcpu=cortex-m7 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F746xx -c -I../Core/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc -I../Drivers/STM32F7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F7xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/mpu6050.d" -MT"Core/Src/mpu6050.o" --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/mpu6050.o"
+../Core/Src/keypad.c:8:8: warning: type defaults to 'int' in declaration of 'flag' [-Wimplicit-int]
+    8 | extern flag;
+      |        ^~~~
+../Core/Src/keypad.c: In function 'key_pad':
+../Core/Src/keypad.c:343:66: warning: character constant too long for its type
+  343 |                                                 writeString[0] = 'Now Transmitting Gyroscope Data...';
+      |                                                                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+../Core/Src/keypad.c:343:66: warning: unsigned conversion from 'int' to 'char' changes value from '1630416430' to '46' [-Woverflow]
+arm-none-eabi-gcc -o "MPDD_Final_Project_v1.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\mathe\Dropbox\PC\Documents\GitHub\STM32-Bluetooth-Communication\MPDD_Final_Project_v1\STM32F746ZGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="MPDD_Final_Project_v1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: MPDD_Final_Project_v1.elf
+ 
+arm-none-eabi-size   MPDD_Final_Project_v1.elf 
+arm-none-eabi-objdump -h -S  MPDD_Final_Project_v1.elf  > "MPDD_Final_Project_v1.list"
+   text	   data	    bss	    dec	    hex	filename
+  35824	    148	  57964	  93936	  16ef0	MPDD_Final_Project_v1.elf
+Finished building: default.size.stdout
+ 
+Finished building: MPDD_Final_Project_v1.list
+ 

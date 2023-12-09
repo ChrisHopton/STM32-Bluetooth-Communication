@@ -137,34 +137,48 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-	  	  	  	  readGyroData(&hi2c2, &gyroX, &gyroY, &gyroZ);
+	  statePinStatus = HAL_GPIO_ReadPin(GPIOG, GPIO_PIN_0);
 
-	  	          char str_buffer[100];  // Made the buffer bigger just in case
-
-	  	          // Format gyro data into a comma-separated list
-	  	          sprintf(str_buffer, "[%d,%d,%d]\n", gyroX, gyroY, gyroZ);
-
-	  	          // Transmit the formatted string over CDC
-	  	        HAL_UART_Transmit(&huart6,(uint8_t*)str_buffer, strlen(str_buffer), 1000);
-	  	          HAL_Delay(50);
+	  // Now you can check if the pin is set (high) or reset (low)
+	  if(statePinStatus == GPIO_PIN_SET) {
 
 
-	  if(keyChar != 0){
-		  key_pad(keyChar);
-		  keyChar = 0;
+			if(keyChar != 0){
+			  key_pad(keyChar);
+			  keyChar = 0;
+			}
+			if(flag == 1){
+			  HAL_UART_Transmit(&huart6, writeString, strlen(writeString), 1000);
+			  flag = 0;
+			}
+			if(flag == 2){
+				readGyroData(&hi2c2, &gyroX, &gyroY, &gyroZ);
+
+					          char str_buffer[100];  // Made the buffer bigger just in case
+
+					          // Format gyro data into a comma-separated list
+					          sprintf(str_buffer, "[%d,%d,%d]\n", gyroX, gyroY, gyroZ);
+
+					          // Transmit the formatted string over CDC
+					        HAL_UART_Transmit(&huart6,(uint8_t*)str_buffer, strlen(str_buffer), 1000);
+					          HAL_Delay(60);
+				          }
+
+
+			if (messageReady) {
+			 // Process the complete message
+			 ILI9163_newFrame();
+			 ILI9163_drawString(5, 5, Font_7x10, BLUE, receivedData);
+			 ILI9163_render();
+
+			 	 messageReady = 0; // Reset the flag
+}
+	  } else {
+	      // Pin PG0 is reset (low)
+	      // ... do something else ...
 	  }
-	  if(flag == 1){
-		  HAL_UART_Transmit(&huart6, writeString, strlen(writeString), 1000);
-		  flag = 0;
-	  }
-	  if (messageReady) {
-	     // Process the complete message
-	     ILI9163_newFrame();
-	     ILI9163_drawString(5, 5, Font_7x10, BLUE, receivedData);
-	     ILI9163_render();
 
-	     messageReady = 0; // Reset the flag
-	   }
+
 
 
   /* USER CODE END 3 */
