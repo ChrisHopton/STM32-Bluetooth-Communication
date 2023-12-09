@@ -96,10 +96,8 @@ char KeyPadGetChar(uint16_t	key);
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
 extern DMA_HandleTypeDef hdma_spi1_tx;
 extern SPI_HandleTypeDef hspi1;
-extern TIM_HandleTypeDef htim14;
 extern UART_HandleTypeDef huart6;
 /* USER CODE BEGIN EV */
 
@@ -247,7 +245,8 @@ void SysTick_Handler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-	key = 0;
+
+		key = 0;
 		for(uint8_t c=0 ; c<4 ; c++){
 			for(uint8_t i=0 ; i<4 ; i++){
 				HAL_GPIO_WritePin((GPIO_TypeDef*)_KEYPAD_COLUMN_GPIO_PORT[i], _KEYPAD_COLUMN_GPIO_PIN[i], GPIO_PIN_SET);
@@ -294,20 +293,6 @@ void SPI1_IRQHandler(void)
 }
 
 /**
-  * @brief This function handles TIM8 trigger and commutation interrupts and TIM14 global interrupt.
-  */
-void TIM8_TRG_COM_TIM14_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM8_TRG_COM_TIM14_IRQn 0 */
-
-  /* USER CODE END TIM8_TRG_COM_TIM14_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim14);
-  /* USER CODE BEGIN TIM8_TRG_COM_TIM14_IRQn 1 */
-
-  /* USER CODE END TIM8_TRG_COM_TIM14_IRQn 1 */
-}
-
-/**
   * @brief This function handles DMA2 stream3 global interrupt.
   */
 void DMA2_Stream3_IRQHandler(void)
@@ -319,20 +304,6 @@ void DMA2_Stream3_IRQHandler(void)
   /* USER CODE BEGIN DMA2_Stream3_IRQn 1 */
 
   /* USER CODE END DMA2_Stream3_IRQn 1 */
-}
-
-/**
-  * @brief This function handles USB On The Go FS global interrupt.
-  */
-void OTG_FS_IRQHandler(void)
-{
-  /* USER CODE BEGIN OTG_FS_IRQn 0 */
-
-  /* USER CODE END OTG_FS_IRQn 0 */
-  HAL_PCD_IRQHandler(&hpcd_USB_OTG_FS);
-  /* USER CODE BEGIN OTG_FS_IRQn 1 */
-
-  /* USER CODE END OTG_FS_IRQn 1 */
 }
 
 /**
@@ -352,44 +323,55 @@ void USART6_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 char KeyPadGetChar(uint16_t	key)
 {
-  switch(key)
-  {
-    case 0x0000:
-      return 0;
-		case 0x0101:
-			return '1';
-		case 0x0201:
-			return '2';
-		case 0x0401:
-			return '3';
-		case 0x0801:
-			return 'A';
-		case 0x0102:
-			return '4';
-		case 0x0202:
-			return '5';
-		case 0x0402:
-			return '6';
-		case 0x0802:
-			return 'B';
-		case 0x0104:
-			return '7';
-		case 0x0204:
-			return '8';
-		case 0x0404:
-			return '9';
-		case 0x0804:
-			return 'C';
-		case 0x0108:
-			return '*';
-		case 0x0208:
-			return '0';
-		case 0x0408:
-			return '#';
-		case 0x0808:
-			return 'D';
-		default:
-			return 0;
-	}
+	switch(key)
+	  {
+			case 0x0101:
+				return '1';
+
+			case 0x0201:
+				return 'A';
+
+			case 0x0401:
+				return 'D';
+
+			case 0x0102:
+				return 'G';
+
+			case 0x0202:
+				return 'J';
+
+			case 0x0402:
+				return 'M';
+
+			case 0x0104:
+				return 'P';
+
+			case 0x0204:
+				return 'T';
+
+			case 0x0404:
+				return 'W';
+
+			case 0x0208:
+				return 'O';
+
+			case 0x0801:
+					return 'A';
+
+			case 0x0802:
+					return 'B';
+
+			case 0x0804:
+					return 'C';
+
+			case 0x0808:
+					return 'd';
+
+			case 0x0108:
+					return '*';
+
+			case 0x0408:
+				return '#';
+		}
 }
 /* USER CODE END 1 */
